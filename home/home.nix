@@ -45,7 +45,7 @@
   
   # home.file.".config/qtile".source = "/dotfiles/qtile";
   home.file.qtile_config = {
-    source = ./qtile/config.py;
+    source = ./home/qtile/config.py;
     target = ".config/qtile/config.py";
   };
   
