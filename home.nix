@@ -1,9 +1,15 @@
-{ config, pkgs, ... }:
-
-{
-  home.username = "vividskies";
-  home.homeDirectory = "/home/vividskies";
-  home.stateVersion = "26.05";
+{ 
+  inputs, 
+  lib, 
+  config, 
+  pkgs, 
+  ... 
+} : {
+  home = {
+    username = "vividskies";
+    homeDirectory = "/home/vividskies";
+    stateVersion = "26.05";
+  };
   
   programs.bash = {
     enable = true;
@@ -37,11 +43,23 @@
     --paging=auto
   '';
   
-  home.file.".config/qtile".source = /home/vividskies/dotfiles/qtile;
+  # home.file.".config/qtile".source = "/dotfiles/qtile";
+  home.file.qtile_config = {
+    source = ./qtile/config.py;
+    target = ".config/qtile/config.py";
+  };
   
-  home.packages = with pkgs; [ 
+
+   
+  home.packages = with pkgs;  [ 
     bat
-    kdePackages.kate
     ghostty
+    steam
+    blender
+    vesktop
+    lutris
+    protonup-qt
+    bottles
+    jetbrains.rider
   ];
 }
