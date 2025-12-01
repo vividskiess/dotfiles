@@ -25,7 +25,7 @@
   };
   
   programs.alacritty = {
-    enable = false;
+    enable = true;
     settings = {
       window.opacity = 0.9;
       font.normal = {
@@ -36,6 +36,7 @@
     };
   };
   
+  programs.quickshell.enable = true;
   
   home.file.".config/bat/config".text = ''
     --theme="Nord"
@@ -45,22 +46,13 @@
   
   # home.file.".config/qtile".source = "/dotfiles/qtile";
   home.file.qtile_config = {
-    source = ./qtile/config.py;
+    source = ./home/qtile/config.py;
     target = ".config/qtile/config.py";
   };
-  
 
+  home.file.".config/niri/config.kdl".source = ./home/niri/config.kdl;
    
   home.packages = with pkgs;  [ 
-    bat
-    ghostty
-    steam
-    blender
-    vesktop
-    lutris
-    protonup-qt
-    bottles
-    jetbrains.rider
-    vscodium-fhs
+    
   ];
 }

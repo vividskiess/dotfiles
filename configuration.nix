@@ -16,8 +16,20 @@
     hostName = "vividskies-pc";
     networkmanager.enable = true;
   };
-  
-  nix.settings.experimental-features = [ "nix-command" "flakes" ]; 
+
+  nix = {
+    settings = {
+      experimental-features = [ "nix-command" "flakes" ]; 
+      auto-optimise-store = true;
+    };
+    gc = {
+      automatic = true;
+      dates = "daily";
+      options = "--delete-older-than 7d";
+
+    };
+  };
+
   time.timeZone = "Australia/Melbourne";
   # i18n.defaultLocale = "en_US.UTF-8";
   # console = {
@@ -53,10 +65,17 @@
   };
   
   services = {
-    xserver = {
+    displayManager.sddm = {
+      package = pkgs.kdePackages.sddm;
       enable = true;
+      wayland.enable = true;
+      theme = "sddm-astronaut-theme";
+    };
+
+    xserver = {
+      enable = false;
       videoDrivers = ["nvidia"];
-      windowManager.qtile.enable = true;
+      # windowManager.qtile.enable = true;
       exportConfiguration = true;
       xrandrHeads = [
       {
@@ -68,10 +87,10 @@
         '';
       }
     ];
-      displayManager.sessionCommands = ''
-      xwallpaper --zoom ~/wallpapers/nixos-anime.jpg
-      xset r rate 200 35 & 
-      '';
+      # displayManager.sessionCommands = ''
+      # xwallpaper --zoom ~/wallpapers/nixos-anime.jpg
+      # xset r rate 200 35 & 
+      # '';
     
       displayManager.setupCommands = ''
       ${pkgs.xorg.xrandr}/bin/xrandr \
@@ -80,11 +99,11 @@
       '';
     };
     
-    picom = {
-      enable = true;
-      backend = "glx";
-      fade = true;
-    };
+    # picom = {
+    #   enable = true;
+    #   backend = "glx";
+    #   fade = true;
+    # };
     
     printing.enable = true;
     # services.xserver.xkb.layout = "us";
@@ -108,10 +127,13 @@
     };
     
     openssh.enable = true;
-  
     udisks2.enable = true;
     gvfs.enable = true;
-    devmon.enable = true;
+    blueman.enable = true;
+    tumbler.enable = true;
+    fstrim.enable = true;
+    power-profiles-daemon.enable = true;
+    upower.enable = true;
   };
   
    users.users.vividskies = {
@@ -127,10 +149,14 @@
    };
   programs = {
     firefox.enable = true;
+    steam.enable = true;
+    niri.enable = true;
+
   };
    
    fonts.packages = with pkgs; [
      jetbrains-mono
+     
    ];
 
   nixpkgs.config = {
@@ -139,36 +165,50 @@
   };
 
   environment.systemPackages = with pkgs; [
-    wget
-    gedit
-    # alacritty
+    # inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
+    inputs.quickshell.packages.${stdenv.hostPlatform.system}.default
+    alacritty
+    fuzzel
+    swaybg
+    swaylock
+    swayidle
+    xwayland-satellite
+    xdg-desktop-portal-gtk
+    xdg-desktop-portal-gnome
+    sddm-astronaut
+    kdePackages.qtmultimedia
+    qt6Packages.qt5compat
+    libsForQt5.qt5.qtgraphicaleffects
+    kdePackages.qtbase
     btop
-    xwallpaper
     pcmanfm
-    rofi
     vesktop
-    blender
+    blender_4_5
     obs-studio
     git
     ungoogled-chromium
     udiskie
-    #cudaPackages.cudatoolkit
-    #cudaPackages.cudnn
-    #cudaPackages.cuda_cudart
+    cudaPackages.cudatoolkit
     tree
+    bat
+    lutris
+    protonup-qt
+    bottles
+    jetbrains.rider
+    vscodium-fhs
   ];
  
 
-  fileSystems."/mnt/exampleDrive" = {
-    device = "/dev/disk/by-uuid/4f999afe-6114-4531-ba37-4bf4a00efd9e";
-    fsType = "exfat";
-    options = [ # If you don't have this options attribute, it'll default to "defaults" 
-      # boot options for fstab. Search up fstab mount options you can use
-      "users" # Allows any user to mount and unmount
-      "nofail" # Prevent system from failing if this drive doesn't mount
+#   fileSystems."/mnt/exampleDrive" = {
+#     device = "/dev/disk/by-uuid/4f999afe-6114-4531-ba37-4bf4a00efd9e";
+#     fsType = "exfat";
+#     options = [ # If you don't have this options attribute, it'll default to "defaults" 
+#       # boot options for fstab. Search up fstab mount options you can use
+#       "users" # Allows any user to mount and unmount
+#       "nofail" # Prevent system from failing if this drive doesn't mount
      
-   ];
- };  
+#    ];
+#  };  
 
   system.stateVersion = "25.05"; 
 
