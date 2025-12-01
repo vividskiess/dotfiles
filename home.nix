@@ -45,7 +45,7 @@
   
   # home.file.".config/qtile".source = "/dotfiles/qtile";
   home.file.qtile_config = {
-    source = ./home/qtile/config.py;
+    source = ./qtile/config.py;
     target = ".config/qtile/config.py";
   };
   
@@ -61,5 +61,6 @@
     protonup-qt
     bottles
     jetbrains.rider
+    vscodium-fhs
   ];
 }

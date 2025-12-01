@@ -135,7 +135,7 @@
 
   nixpkgs.config = {
     allowUnfree = true;
-    cudaSupport = true;
+    # cudaSupport = true;
   };
 
   environment.systemPackages = with pkgs; [

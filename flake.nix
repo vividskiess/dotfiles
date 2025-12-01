@@ -19,7 +19,7 @@
       system = "x86_64-linux";
       specialArgs = {inherit inputs;};
       modules = [ 
-        ./system/configuration.nix
+        ./configuration.nix
 	home-manager.nixosModules.home-manager
 	{
 	  imports = [ aagl.nixosModules.default ];
@@ -30,7 +30,7 @@
 	  home-manager = {
 	    useGlobalPkgs = true;
 	    useUserPackages = true;
-	    users.vividskies = import ./home/home.nix;
+	    users.vividskies = import ./home.nix;
 	    backupFileExtension = "backup";
 	  };
 	}
