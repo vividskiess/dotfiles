@@ -1,25 +1,37 @@
-{ inputs, config, lib, pkgs, ... }: {
-  imports = [ 
-    ./hardware-configuration.nix
-  ];
+# Edit this configuration file to define what should be installed on
+# your system.  Help is available in the configuration.nix(5) man page
+# and in the NixOS manual (accessible by running ‘nixos-help’).
+
+{ config, inputs,  pkgs, ... }:
+
+{
+  imports =
+    [ # Include the results of the hardware scan.
+      ./hardware-configuration.nix
+    ];
 
   boot = {
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
-    supportedFilesystems = [ "ntfs" ];
     kernelPackages = pkgs.linuxPackages_latest;
   };
-  
+
   networking = {
-    hostName = "vividskies-pc";
+    hostName = "vividskies";
     networkmanager.enable = true;
+
+    extraHosts = ''
+      0.0.0.0 hkrpg-log-upload-os.hoyoverse.com
+      0.0.0.0 log-upload-os.hoyoverse.com
+      0.0.0.0 sg-public-data-api.hoyoverse.com
+    '';
   };
 
   nix = {
     settings = {
-      experimental-features = [ "nix-command" "flakes" ]; 
+      experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
     };
     gc = {
@@ -29,15 +41,6 @@
 
     };
   };
-
-  time.timeZone = "Australia/Melbourne";
-  # i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  #   useXkbConfig = true; # use xkb.options in tty.
-  # };
-  
   hardware = {
     graphics.enable = true;
     graphics.enable32Bit = true;
@@ -52,34 +55,55 @@
         finegrained = false;
       };
     };
-    
+
     bluetooth = {
       enable = true;
       powerOnBoot = true;
     };
-    
+
     steam-hardware.enable = true;
     wooting.enable = true;
     usb-modeswitch.enable = true;
     opentabletdriver.enable  = true;
   };
-  
+
+  # Set your time zone.
+  time.timeZone = "Australia/Melbourne";
+
+  # Select internationalisation properties.
+  i18n.defaultLocale = "en_AU.UTF-8";
+
+  i18n.extraLocaleSettings = {
+    LC_ADDRESS = "en_AU.UTF-8";
+    LC_IDENTIFICATION = "en_AU.UTF-8";
+    LC_MEASUREMENT = "en_AU.UTF-8";
+    LC_MONETARY = "en_AU.UTF-8";
+    LC_NAME = "en_AU.UTF-8";
+    LC_NUMERIC = "en_AU.UTF-8";
+    LC_PAPER = "en_AU.UTF-8";
+    LC_TELEPHONE = "en_AU.UTF-8";
+    LC_TIME = "en_AU.UTF-8";
+  };
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
   services = {
     displayManager.sddm = {
-      package = pkgs.kdePackages.sddm;
       enable = true;
       wayland.enable = true;
-      theme = "sddm-astronaut-theme";
+      theme = "catppuccin-mocha-pink";
+      package = pkgs.kdePackages.sddm;
     };
-
+    # desktopManager.plasma6.enable = true;
     xserver = {
       enable = false;
       videoDrivers = ["nvidia"];
-      # windowManager.qtile.enable = true;
       exportConfiguration = true;
+      xkb = {
+        layout = "au";
+        variant = "";
+      };
       xrandrHeads = [
       {
-        output = "DP-4";
+        output = "HMDI-A-2";
         primary = true;
         monitorConfig = ''
         ModeLine "3440x1440_174.96"  1347.58  3440 3752 4136 4832  1440 1441 1444 1594  -hsync +vsync
@@ -87,28 +111,21 @@
         '';
       }
     ];
-      # displayManager.sessionCommands = ''
-      # xwallpaper --zoom ~/wallpapers/nixos-anime.jpg
-      # xset r rate 200 35 & 
-      # '';
-    
+#             xwallpaper --zoom ~/wallpapers/nixos-anime.jpg
+      displayManager.sessionCommands = ''
+
+      xset r rate 200 35 &
+      '';
+
       displayManager.setupCommands = ''
       ${pkgs.xorg.xrandr}/bin/xrandr \
-      --output DP-4 --primary --mode 3440x1440 --rate 175 \
-      --output DP-2  --mode 2560x1440 --rate 144 --above DP-4
+      --output HDMI-A-2 --primary --mode 3440x1440 --rate 175 \
+      --output DP-2  --mode 2560x1440 --rate 144 --above HDMI-A-2
       '';
-    };
-    
-    # picom = {
-    #   enable = true;
-    #   backend = "glx";
-    #   fade = true;
-    # };
-    
+      };
+
     printing.enable = true;
-    # services.xserver.xkb.layout = "us";
-    # services.xserver.xkb.options = "eurosign:e,caps:escape";
-    
+
     # pulseaudio.enable = true;
     pipewire = {
       enable = true;
@@ -119,98 +136,138 @@
       audio.enable = true;
       wireplumber.enable = true;
     };
-    
+
     libinput = {
       enable = true;
       mouse = {accelProfile = "flat";};
-      touchpad = {accelProfile = "flat";};
+      # touchpad = {accelProfile = "flat";};
     };
-    
+
     openssh.enable = true;
-    udisks2.enable = true;
-    gvfs.enable = true;
-    blueman.enable = true;
-    tumbler.enable = true;
-    fstrim.enable = true;
+#     udisks2.enable = true;
+#     gvfs.enable = true;
+#     blueman.enable = true;
+#     tumbler.enable = true;
+#     fstrim.enable = true;
     power-profiles-daemon.enable = true;
-    upower.enable = true;
+      upower.enable = true;
   };
-  
-   users.users.vividskies = {
-     isNormalUser = true;
-     extraGroups = [ 
-       "wheel" 
-       "networkmanager"
-       "input"
-       "docker"
-       "audio" 
-     ];
-     # shell = pkgs.zsh;
-   };
+
+  security.rtkit.enable = true;
+
+  # Enable touchpad support (enabled default in most desktopManager).
+  # services.xserver.libinput.enable = true;
+
+  # Define a user account. Don't forget to set a password with ‘passwd’.
+  users.users.vividskies = {
+    isNormalUser = true;
+    description = "vividskies";
+    extraGroups = [ "networkmanager" "wheel" ];
+    packages = with pkgs; [
+      # kdePackages.kate
+      #  thunderbird
+    ];
+  };
+
+  # Install firefox.
   programs = {
-    firefox.enable = true;
-    steam.enable = true;
+    anime-game-launcher.enable = true;
+    wavey-launcher.enable = true;
+    honkers-launcher.enable = true;
+    honkers-railway-launcher.enable = true;
+    steam = {
+      enable = true;
+      remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+      dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    };
+    # firefox.enable = true;
     niri.enable = true;
-
+#     steam.enable = true;
   };
-   
-   fonts.packages = with pkgs; [
-     jetbrains-mono
-     
-   ];
+#   programs.mangowc = {
+#     enable = true;
+#   };
+  fonts.packages = with pkgs; [
+    jetbrains-mono
 
+    ];
+
+  # Allow unfree packages
   nixpkgs.config = {
     allowUnfree = true;
-    # cudaSupport = true;
-  };
 
+  };
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
   environment.systemPackages = with pkgs; [
-    # inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
-    inputs.quickshell.packages.${stdenv.hostPlatform.system}.default
-    alacritty
-    fuzzel
-    swaybg
-    swaylock
-    swayidle
+#     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+#     wget
+#     vim
+#     git
+#     ghostty
+#     btop
+#     neovim
+#     vesktop
+#     tree
+#     bat
+#     tree
+#     lutris
+#     protonup-qt
+#     bottles
+#     (blender.override {cudaSupport = true;})
+    godot
+    godot-mono
+    github-desktop
     xwayland-satellite
+    xdg-desktop-portal-hyprland
     xdg-desktop-portal-gtk
     xdg-desktop-portal-gnome
-    sddm-astronaut
-    kdePackages.qtmultimedia
-    qt6Packages.qt5compat
-    libsForQt5.qt5.qtgraphicaleffects
-    kdePackages.qtbase
-    btop
-    pcmanfm
-    vesktop
-    blender_4_5
-    obs-studio
-    git
-    ungoogled-chromium
-    udiskie
+    kdePackages.xdg-desktop-portal-kde
+    wl-clipboard
+    catppuccin-cursors.mochaPink
+    (catppuccin-sddm.override {
+      flavor = "mocha";
+      accent = "pink";
+      font  = "JetBrains Mono";
+      fontSize = "9";
+      background = "${./images/wallpapers/pink-clouds.jpg}";
+      loginBackground = true;
+    })
+     kdePackages.qtmultimedia
+     qt6Packages.qt5compat
+     libsForQt5.qt5.qtgraphicaleffects
+     kdePackages.qtbase
+#    pcmanfm
     cudaPackages.cudatoolkit
-    tree
-    bat
-    lutris
-    protonup-qt
-    bottles
-    jetbrains.rider
-    vscodium-fhs
+    # inputs.caelestia-shell.packages.${stdenv.hostPlatform.system}.default
+    kdePackages.kate
   ];
- 
 
-#   fileSystems."/mnt/exampleDrive" = {
-#     device = "/dev/disk/by-uuid/4f999afe-6114-4531-ba37-4bf4a00efd9e";
-#     fsType = "exfat";
-#     options = [ # If you don't have this options attribute, it'll default to "defaults" 
-#       # boot options for fstab. Search up fstab mount options you can use
-#       "users" # Allows any user to mount and unmount
-#       "nofail" # Prevent system from failing if this drive doesn't mount
-     
-#    ];
-#  };  
+  # Some programs need SUID wrappers, can be configured further or are
+  # started in user sessions.
+  # programs.mtr.enable = true;
+  # programs.gnupg.agent = {
+  #   enable = true;
+  #   enableSSHSupport = true;
+  # };
 
-  system.stateVersion = "25.05"; 
+  # List services that you want to enable:
+
+  # Enable the OpenSSH daemon.
+  # services.openssh.enable = true;
+
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
+
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "25.11"; # Did you read the comment?
 
 }
-
