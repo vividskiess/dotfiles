@@ -144,16 +144,18 @@
     };
 
     openssh.enable = true;
-#     udisks2.enable = true;
-#     gvfs.enable = true;
+    udisks2.enable = true;
+    gvfs.enable = true;
+    devmon.enable = true;
 #     blueman.enable = true;
 #     tumbler.enable = true;
 #     fstrim.enable = true;
     power-profiles-daemon.enable = true;
-      upower.enable = true;
+    upower.enable = true;
   };
 
   security.rtkit.enable = true;
+  security.polkit.enable = true;
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
@@ -241,6 +243,7 @@
     cudaPackages.cudatoolkit
     # inputs.caelestia-shell.packages.${stdenv.hostPlatform.system}.default
     kdePackages.kate
+    gparted
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
